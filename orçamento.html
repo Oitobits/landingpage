@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orçamento Oitobits Informática</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --primary: #1a6d3f;
+      --primary-light: #2e8b57;
+      --secondary: #f8f9fa;
+      --text: #333;
+      --border: #ddd;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    /* ... os estilos anteriores ... */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+      color: var(--text);
+      padding: 20px; min-height: 100vh;
+    }
+    .container {
+      max-width: 1000px; margin: 0 auto; background: white; border-radius: 12px;
+      overflow: hidden; box-shadow: var(--shadow); position: relative;
+    }
+    .header { display: flex; justify-content: center; align-items: center;
+      padding: 40px 20px;
+      background: linear-gradient(rgba(255,255,255,0.95), rgba(245,247,250,0.95)),
+      url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop') center/cover;
+      border-bottom: 4px solid var(--primary); position: relative;
+    }
+    .header::before {
+      content:""; position:absolute; top:0; left:0; right:0; bottom:0;
+      background: rgba(255,255,255,0.9); z-index:0;
+    }
+    .header-content { position: relative; z-index:1; text-align:center; width:100%; }
+    .header img { max-height: 120px; width:auto; max-width:100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+    .title-container { padding:20px; text-align:center; background:linear-gradient(to right, var(--primary), var(--primary-light)); color:white; margin-bottom:20px;}
+    .title-container h2 { font-size:2.2rem; letter-spacing:1px; text-transform:uppercase; font-weight:700;}
+    .section { display:flex; justify-content:space-between; margin:0 20px 20px; gap:20px; }
+    .box { flex:1; padding:20px; border-radius:10px; background:var(--secondary); box-shadow:0 2px 8px rgba(0,0,0,0.05); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid var(--border);}
+    .box:hover { transform:translateY(-3px); box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+    label { display:block; font-weight:600; margin-bottom:8px; color:var(--primary); font-size:0.95rem;}
+    .input-group { margin-bottom:15px;}
+    input, textarea { width:100%; padding:12px 15px; border: 1px solid var(--border); border-radius:8px; font-size:1rem; transition: border-color 0.3s, box-shadow 0.3s; background:white;}
+    input:focus, textarea:focus { outline:none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 109, 63, 0.2);}
+    table { width: calc(100% - 40px); margin: 0 20px 20px; border-collapse: separate; border-spacing: 0; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); table-layout: fixed; }
+    thead { background: linear-gradient(to right, var(--primary), var(--primary-light)); color: white;}
+    th { padding: 15px; text-align: left; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; font-size: 0.9rem;}
+    th:first-child { border-top-left-radius: 10px; } th:last-child { border-top-right-radius: 10px; }
+    tbody tr:nth-child(even) { background-color: #f8faf9;}
+    tbody tr:hover { background-color: #eaf7f0;}
+    td { padding: 8px 15px; border-bottom: 1px solid var(--border); vertical-align: top; height: auto; }
+    td input, td textarea { width:100%; border:none; background:transparent; padding:8px 12px; font-size:1rem; resize:none; box-sizing:border-box; }
+    td input:focus, td textarea:focus { background:rgba(26, 109, 63, 0.05); border-radius:4px; }
+    td .product-name {
+      min-height: 40px;
+      max-height: 300px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.4;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+      background: transparent;
+      border: none;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .bottom-section { display:flex; justify-content:space-between; margin:0 20px 30px; gap:20px;}
+    .bottom-box { flex:1; padding:20px; border-radius:10px; background: var(--secondary); box-shadow:0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border);}
+    .bottom-box small { display:block; margin-top:12px; font-size:0.85rem; color:#666; font-style:italic;}
+    textarea { min-height:120px; resize:vertical;}
+    .btn { padding:12px 30px; border:none; border-radius:8px; font-weight:600; font-size:1rem; cursor:pointer; transition: all 0.3s; display:flex; align-items:center; gap:8px;}
+    .btn-primary { background: linear-gradient(to right, var(--primary), var(--primary-light)); color:white; box-shadow:0 4px 10px rgba(26, 109, 63, 0.3);}
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 15px rgba(26, 109, 63, 0.4);}
+    .btn-secondary { background:white; color:var(--primary); border:1px solid var(--primary);}
+    .btn-secondary:hover { background:#f0f9f4;}
+    .footer { text-align:center; padding:25px 20px; background:linear-gradient(to right, #1a3a1f, #1a6d3f); color:white; font-size:0.95rem; border-top:3px solid #0d4b24;}
+    .footer-info { margin-bottom:12px; line-height:1.6;}
+    .footer-info p { margin-bottom:5px; }
+    .contact-info { display:flex; justify-content:center; align-items:center; gap:15px; margin-top:10px;}
+    .contact-item { display:flex; align-items:center; gap:8px;}
+    .contact-icon { color:#a8e063; font-size:1.1rem;}
+    .footer a { color:#a8e063; text-decoration:none; font-weight:600; transition:color 0.3s;}
+    .footer a:hover { color:white; text-decoration:underline;}
+    .export-btn {
+      position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(to right, var(--primary), var(--primary-light)); color:white; display: flex;
+      align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      cursor: pointer; z-index: 100; transition: all 0.3s ease;
+    }
+    .export-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 16px rgba(0,0,0,0.3);}
+    .add-row-btn {
+      margin: 0 20px 20px; padding: 10px 20px; background: var(--primary); color: white; border: none;
+      border-radius: 8px; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;}
+    .add-row-btn:hover { background: var(--primary-light); transform: translateY(-2px);}
+    .remove-row-btn { background:transparent; border:none; color:#dc3545; cursor:pointer; font-size:1.1rem; transition:all 0.2s;padding:5px;border-radius:4px;}
+    .remove-row-btn:hover { background:rgba(220,53,69,0.1); transform:scale(1.1);}
+    .total-value {font-weight:bold; font-size:1.05rem; color:var(--primary);}
+    @media (max-width: 768px) {
+      .section, .bottom-section { flex-direction: column;}
+      table { width: calc(100% - 30px); margin: 0 15px 20px;}
+      .contact-info { flex-direction: column; gap: 10px;}
+      .header img { max-height: 100px; }
+      .export-btn { bottom: 20px; right: 20px; width: 50px; height: 50px; font-size: 20px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="content-to-export">
+    <div class="header">
+      <div class="header-content">
+        <img src="https://lh3.googleusercontent.com/d/1NbOK-zyWIIZ5H9wobBirfO8PJAgOH5Sc" alt="Logo Oitobits">
+      </div>
+    </div>
+    <div class="title-container">
+      <h2>ORÇAMENTO</h2>
+    </div>
+    <div class="section">
+      <div class="box">
+        <div class="input-group">
+          <label><i class="fas fa-user"></i> Cliente</label>
+          <input type="text" placeholder="Nome completo" id="client-name">
+        </div>
+        <div class="input-group">
+          <input type="text" placeholder="Telefone" id="client-phone">
+        </div>
+        <div class="input-group">
+          <input type="email" placeholder="E-mail" id="client-email">
+        </div>
+        <div class="input-group">
+          <input type="CPF/CNPJ" placeholder="CPF/CNPJ" id="client-identification">
+        </div>
+      </div>
+      <div class="box">
+        <div class="input-group">
+          <label><i class="fas fa-user-tie"></i> Vendedor</label>
+          <input type="text" placeholder="Nome do vendedor" id="seller-name">
+        </div>
+        <div class="input-group">
+          <label><i class="fas fa-calendar"></i> Data</label>
+          <input type="date" id="quote-date">
+        </div>
+        <div class="input-group">
+          <label><i class="fas fa-hashtag"></i> Número do Orçamento</label>
+          <input type="text" placeholder="OB2024-001" id="quote-number">
+        </div>
+      </div>
+    </div>
+    <table id="products-table">
+      <thead>
+        <tr>
+          <th width="15%">Código</th>
+          <th width="10%">Qnt.</th>
+          <th>Produto</th>
+          <th width="15%">Preço Unitário</th>
+          <th width="15%">Total</th>
+          <th width="5%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" class="product-code"></td>
+          <td><input type="number" min="1" value="1" class="product-qty"></td>
+          <td><textarea class="product-name"></textarea></td>
+          <td><input type="number" step="0.01" placeholder="R$" class="product-price"></td>
+          <td><input type="text" readonly class="product-total"></td>
+          <td><button class="remove-row-btn"><i class="fas fa-trash"></i></button></td>
+        </tr>
+        <tr>
+          <td><input type="text" class="product-code"></td>
+          <td><input type="number" min="1" value="1" class="product-qty"></td>
+          <td><textarea class="product-name"></textarea></td>
+          <td><input type="number" step="0.01" placeholder="R$" class="product-price"></td>
+          <td><input type="text" readonly class="product-total"></td>
+          <td><button class="remove-row-btn"><i class="fas fa-trash"></i></button></td>
+        </tr>
+        <tr>
+          <td><input type="text" class="product-code"></td>
+          <td><input type="number" min="1" value="1" class="product-qty"></td>
+          <td><textarea class="product-name"></textarea></td>
+          <td><input type="number" step="0.01" placeholder="R$" class="product-price"></td>
+          <td><input type="text" readonly class="product-total"></td>
+          <td><button class="remove-row-btn"><i class="fas fa-trash"></i></button></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="add-row-btn" id="add-row-btn">
+      <i class="fas fa-plus"></i>
+    </button>
+    <div class="bottom-section">
+      <div class="bottom-box">
+        <label><i class="fas fa-credit-card"></i> Formas de Pagamento</label>
+        <div class="input-group">
+          <label>Valor Total das Peças:</label>
+          <input type="text" id="total-value" readonly class="total-value">
+        </div>
+        <div class="input-group">
+          <label>Parcelado em 12x:</label>
+          <input type="text" id="installment-value" readonly class="total-value">
+        </div>
+        <div class="input-group">
+          <label>PIX/Dinheiro (5% de desconto):</label>
+          <input type="text" id="pix-value" readonly class="total-value">
+        </div>
+        <small>Para condições personalizadas, consulte seu vendedor</small>
+      </div>
+      <div class="bottom-box">
+        <label><i class="fas fa-comment-alt"></i> Observações</label>
+        <textarea placeholder="Informações adicionais..." id="notes"></textarea>
+        <div class="input-group" style="margin-top: 15px;">
+          <label><i class="fas fa-percentage"></i> Desconto</label>
+          <input type="text" placeholder="Valor ou percentual" id="discount">
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <div class="footer-info">
+        <p><strong>Oitobits Informática LTDA</strong></p>
+        <p>Rua Mário Cesar da Costa, 2422 - Real Parque - São José - SC</p>
+      </div>
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fab fa-whatsapp contact-icon"></i>
+          <a target="_blank" href="https://wa.me/5548996446192">(48) 9.9644.6192</a>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-globe contact-icon"></i>
+          <a target="_blank" href="http://www.oitobitsinformatica.com.br">www.oitobitsinformatica.com.br</a>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope contact-icon"></i>
+          <a target="_blank" href="mailto:contato@oitobits.com">loja.oitobits@gmail.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="export-btn" id="export-btn">
+    <i class="fas fa-file-export"></i>
+  </div>
+  <script>
+    // Função para auto expandir o textarea
+    function autoGrowTextArea(el) {
+      el.style.height = "40px"; // valor base
+      el.style.height = (el.scrollHeight) + "px";
+    }
+
+    // Cálculos automáticos para a tabela e totais
+    function calculateTotals() {
+      let total = 0;
+      document.querySelectorAll('.product-total').forEach(totalInput => {
+        const value = parseFloat(totalInput.value.replace('R$ ', '')) || 0;
+        total += value;
+      });
+      const discountInput = document.getElementById('discount');
+      let discount = 0;
+      if (discountInput.value) {
+        if (discountInput.value.includes('%')) {
+          const percent = parseFloat(discountInput.value.replace('%', '')) || 0;
+          discount = total * (percent / 100);
+        } else {
+          discount = parseFloat(discountInput.value.replace('R$ ', '')) || 0;
+        }
+      }
+      const totalWithDiscount = total - discount;
+      document.getElementById('total-value').value = `R$ ${totalWithDiscount.toFixed(2)}`;
+      document.getElementById('installment-value').value = `R$ ${(totalWithDiscount * 1.13).toFixed(2)} (12x de R$ ${(totalWithDiscount * 1.13 / 12).toFixed(2)})`;
+      document.getElementById('pix-value').value = `R$ ${(totalWithDiscount * 0.95).toFixed(2)}`;
+    }
+
+    function setupRowCalculations(row) {
+      const qtdInput = row.querySelector('.product-qty');
+      const priceInput = row.querySelector('.product-price');
+      const totalInput = row.querySelector('.product-total');
+      const removeBtn = row.querySelector('.remove-row-btn');
+      const productNameField = row.querySelector('.product-name');
+      function calculateTotal() {
+        const quantity = parseFloat(qtdInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const total = quantity * price;
+        totalInput.value = total ? `R$ ${total.toFixed(2)}` : '';
+        calculateTotals();
+      }
+      qtdInput.addEventListener('input', calculateTotal);
+      priceInput.addEventListener('input', calculateTotal);
+      if(productNameField) {
+        autoGrowTextArea(productNameField);
+        productNameField.addEventListener('input', function() {
+          autoGrowTextArea(this);
+        });
+      }
+      removeBtn.addEventListener('click', () => {
+        if (document.querySelectorAll('#products-table tbody tr').length > 1) {
+          row.remove();
+          calculateTotals();
+        } else {
+          alert('O orçamento deve ter pelo menos um item!');
+        }
+      });
+    }
+
+    // Configurar cálculos e auto-grow para as linhas existentes
+    document.querySelectorAll('#products-table tbody tr').forEach(row => {
+      setupRowCalculations(row);
+    });
+    // Adicionar nova linha à tabela
+    document.getElementById('add-row-btn').addEventListener('click', () => {
+      const tbody = document.querySelector('#products-table tbody');
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td><input type="text" class="product-code"></td>
+        <td><input type="number" min="1" value="1" class="product-qty"></td>
+        <td><textarea class="product-name"></textarea></td>
+        <td><input type="number" step="0.01" placeholder="R$" class="product-price"></td>
+        <td><input type="text" readonly class="product-total"></td>
+        <td><button class="remove-row-btn"><i class="fas fa-trash"></i></button></td>
+      `;
+      tbody.appendChild(newRow);
+      setupRowCalculations(newRow);
+    });
+
+    document.getElementById('discount').addEventListener('input', calculateTotals);
+
+    // Preencher data atual e número do orçamento
+    const today = new Date();
+    document.getElementById('quote-date').valueAsDate = today;
+    const year = today.getFullYear();
+    const randomNum = Math.floor(100 + Math.random() * 900);
+    document.getElementById('quote-number').value = `OB${year}-${randomNum}`;
+
+    // Exportar para PDF
+    document.getElementById('export-btn').addEventListener('click', () => {
+      const element = document.getElementById('content-to-export');
+      const opt = {
+        margin: 10,
+        filename: `Orcamento_${document.getElementById('client-name').value || 'Oitobits'}_${year}-${randomNum}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          scrollY: 0,
+          windowWidth: element.scrollWidth,
+          width: element.scrollWidth
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          hotfixes: ["px_scaling"]
+        }
+      };
+      const exportBtn = document.getElementById('export-btn');
+      exportBtn.style.visibility = 'hidden';
+      html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+        const totalPages = pdf.internal.getNumberOfPages();
+        if (totalPages > 1) {
+          opt.html2canvas.scale = 1.5;
+          html2pdf().set(opt).from(element).save();
+        } else {
+          pdf.save(opt.filename);
+        }
+        exportBtn.style.visibility = 'visible';
+      }).save();
+    });
+  </script>
+</body>
+</html>
